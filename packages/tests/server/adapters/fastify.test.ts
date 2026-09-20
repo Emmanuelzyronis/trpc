@@ -400,6 +400,46 @@ describe('anonymous user', () => {
     client.close();
   });
 
+  test('broadcastReconnectNotification asks connected clients to reconnect', async () => {
+    // Fastify encapsulates decorations, so `broadcastReconnectNotification` is
+    // only reachable on the root instance when the plugin is registered with
+    // `fastify-plugin` (same as `@fastify/websocket`'s `websocketServer`).
+    await app.stop();
+    app = await createApp({
+      serverOptions: { fastifyPluginWrapper: true },
+    });
+
+    const socket = new WebSocket(
+      `ws://localhost:${app.url.port}${config.prefix}`,
+    );
+    const received: string[] = [];
+
+    await new Promise<void>((resolve, reject) => {
+      socket.once('open', () => resolve());
+      socket.once('error', reject);
+    });
+    socket.on('message', (data) => {
+      received.push(data.toString());
+    });
+
+    // The server only tracks a client once its connection handler has run, so
+    // keep notifying until the socket is registered.
+    await vi.waitFor(
+      () => {
+        app.server.broadcastReconnectNotification();
+        expect(received.length).toBeGreaterThan(0);
+      },
+      { timeout: 5_000, interval: 50 },
+    );
+
+    expect(JSON.parse(received[0]!)).toEqual({
+      id: null,
+      method: 'reconnect',
+    });
+
+    socket.close();
+  });
+
   test('subscription', async () => {
     app.ee.once('subscription:created', () => {
       setTimeout(() => {
