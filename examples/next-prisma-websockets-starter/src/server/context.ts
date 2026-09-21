@@ -2,7 +2,7 @@ import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '~/pages/api/auth/[...nextauth]';
+import { authOptions } from '../pages/api/auth/[...nextauth]';
 
 /**
  * Parses a `Cookie` header the same way Next.js does for API routes, so the
