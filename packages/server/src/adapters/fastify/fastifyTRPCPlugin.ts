@@ -19,9 +19,8 @@ import {
   getWSConnectionHandler,
   handleKeepAlive,
   jsonEncoder,
-  type ReconnectNotificationTarget,
-  type WSSHandlerOptions,
 } from '../ws';
+import type { ReconnectNotificationTarget, WSSHandlerOptions } from '../ws';
 import type { FastifyHandlerOptions } from './fastifyRequestHandler';
 import { fastifyRequestHandler } from './fastifyRequestHandler';
 
